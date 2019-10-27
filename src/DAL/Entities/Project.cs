@@ -7,6 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities
 {
+    /// <summary>
+    /// Project entity
+    /// </summary>
     public class Project : IEntity<int>
     {
         [Key]
