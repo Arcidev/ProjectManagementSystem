@@ -32,6 +32,9 @@ namespace BL.Installers
             }
 
             return services.AddSingleton<Func<ProjectRepository>>(provider => () => provider.GetRequiredService<ProjectRepository>())
+                .AddSingleton<Func<TaskRepository>>(provider => () => provider.GetRequiredService<TaskRepository>())
+                .AddSingleton<Func<TasksQuery>>(provider => () => provider.GetRequiredService<TasksQuery>())
+
                 .AddSingleton<IUnitOfWorkProvider, AppUnitOfWorkProvider>()
                 .AddSingleton<IUnitOfWorkRegistry, AsyncLocalUnitOfWorkRegistry>()
                 .AddSingleton<IDateTimeProvider, UtcDateTimeProvider>()

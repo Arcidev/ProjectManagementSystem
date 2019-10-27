@@ -1,28 +1,15 @@
 ﻿using Shared.Enums;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BL.DTO
 {
     /// <summary>
-    /// DTO for creating project
+    /// DTO for project
     /// </summary>
-    public class ProjectDTO
+    public class ProjectDTO : SubProjectDTO
     {
-        public int Id { get; set; }
-
-        public int? ParentProjectId { get; set; }
-
-        public string Code { get; set; }
-
-        public string Name { get; set; }
-
-        public DateTime StartDate { get; set; }
-
-        public DateTime? FinishDate { get; set; }
-
-        public ProjectState State
+        public override ProjectState State
         {
             get
             {
@@ -37,8 +24,6 @@ namespace BL.DTO
             }
         }
 
-        public List<ProjectDTO> SubProjects { get; set; }
-
-        public List<TaskDTO> Tasks { get; set; }
+        public List<SubProjectDTO> SubProjects { get; set; }
     }
 }

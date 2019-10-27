@@ -27,10 +27,10 @@ namespace BL.Tests
                 Name = "Name",
                 Tasks = new List<TaskDTO>()
                 {
-                    new TaskDTO() { Name = "Task1", Description = "Description1", State = TaskState.Planned, StartDate = currentDate, SubTasks = new List<TaskDTO>() },
-                    new TaskDTO() { Name = "Task2", Description = "Description2", State = TaskState.InProgress, StartDate = currentDate, FinishDate = currentDate.AddDays(1), SubTasks = new List<TaskDTO>()
+                    new TaskDTO() { Name = "Task1", Description = "Description1", State = TaskState.Planned, StartDate = currentDate, SubTasks = new List<SubTaskDTO>() },
+                    new TaskDTO() { Name = "Task2", Description = "Description2", State = TaskState.InProgress, StartDate = currentDate, FinishDate = currentDate.AddDays(1), SubTasks = new List<SubTaskDTO>()
                     {
-                        new TaskDTO { Name = "SubTask", Description = "Description", State = TaskState.Completed, StartDate = currentDate, FinishDate = currentDate }
+                        new SubTaskDTO { Name = "SubTask", Description = "Description", State = TaskState.Completed, StartDate = currentDate, FinishDate = currentDate }
                     } }
                 }
             };
@@ -44,8 +44,17 @@ namespace BL.Tests
             Assert.NotNull(dto);
             CompareProject(project, dto);
 
-            await projectFacade.DeleteProject(dto.Id);
+            project.Code = "Code1";
+            project.Name = "Name1";
+            await projectFacade.UpdateProject(project);
             Assert.Null(await projectFacade.GetProject("Code"));
+
+            dto = await projectFacade.GetProject(dto.Id);
+            Assert.NotNull(dto);
+            CompareProject(project, dto);
+
+            await projectFacade.DeleteProject(dto.Id);
+            Assert.Null(await projectFacade.GetProject("Code1"));
             Assert.Null(await projectFacade.GetProject(dto.Id));
         }
 

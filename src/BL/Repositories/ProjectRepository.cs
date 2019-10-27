@@ -15,7 +15,7 @@ namespace BL.Repositories
         /// </summary>
         /// <param name="id">Id of project</param>
         /// <returns>Existing project</returns>
-        public async Task<Project> GetProject(int id)
+        internal async Task<Project> GetProject(int id)
         {
             return await GetProjectIncludes().FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -25,11 +25,15 @@ namespace BL.Repositories
         /// </summary>
         /// <param name="code">Id of project</param>
         /// <returns>Existing project</returns>
-        public async Task<Project> GetProject(string code)
+        internal async Task<Project> GetProject(string code)
         {
             return await GetProjectIncludes().FirstOrDefaultAsync(x => x.Code == code);
         }
 
+        /// <summary>
+        /// Take subprojects/tasks/subtasks
+        /// </summary>
+        /// <returns>Queryable of projects</returns>
         private IQueryable<Project> GetProjectIncludes()
         {
             return Context.Projects.Include(x => x.SubProjects).ThenInclude(x => x.Tasks).ThenInclude(x => x.SubTasks).Include(x => x.Tasks).ThenInclude(x => x.SubTasks);

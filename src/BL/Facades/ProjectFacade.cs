@@ -1,13 +1,19 @@
 ﻿using AutoMapper;
 using BL.DTO;
 using BL.Repositories;
+using BL.Resources;
 using DAL.Entities;
 using Riganti.Utils.Infrastructure.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BL.Facades
 {
+    /// <summary>
+    /// Facade to handle project based operations
+    /// </summary>
     public class ProjectFacade : BaseFacade
     {
         private readonly Func<ProjectRepository> projectRepository;
@@ -26,6 +32,7 @@ namespace BL.Facades
         /// <returns>Asynchronous task</returns>
         public async Task AddProject(ProjectDTO project)
         {
+            TaskFacade.NormalizeTaskProjectId(project.Tasks);
             using var uow = uowProviderFunc().Create();
             var entity = mapper.Map<Project>(project);
 
@@ -41,15 +48,21 @@ namespace BL.Facades
         /// </summary>
         /// <param name="project">Project to be updated</param>
         /// <returns>Asynchronous task</returns>
-        /// <exception cref="UIException">Thrown when project to be updated not found</exception>
+        /// <exception cref="UIException">Thrown when project to be updated not found or subproject tries to contain another subproject</exception>
         public async Task UpdateProject(ProjectDTO project)
         {
+            TaskFacade.NormalizeTaskProjectId(project.Tasks);
             using var uow = uowProviderFunc().Create();
             var repo = projectRepository();
 
             var entity = await repo.GetByIdAsync(project.Id);
-            IsNotNull(entity, "Error");
+            IsNotNull(entity, ErrorMessages.ProjectNotFound);
+
+            if (entity.ParentProjectId.HasValue && project.SubProjects != null && project.SubProjects.Any())
+                throw new UIException(ErrorMessages.SubProjectContaingProjects);
+
             mapper.Map(project, entity);
+            await uow.CommitAsync();
         }
 
         /// <summary>

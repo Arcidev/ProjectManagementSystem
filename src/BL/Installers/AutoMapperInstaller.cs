@@ -22,12 +22,19 @@ namespace BL.Installers
                 throw new ArgumentNullException(nameof(services));
 
             var autoMapperConfig = new MapperConfiguration(config => {
+                config.CreateMap<Project, ProjectDTO>();
+                config.CreateMap<Project, SubProjectDTO>();
+                config.CreateMap<SubProjectDTO, Project>()
+                    .ForMember(x => x.Id, action => action.Ignore());
                 config.CreateMap<ProjectDTO, Project>()
                     .ForMember(x => x.Id, action => action.Ignore());
-                config.CreateMap<Project, ProjectDTO>();
 
                 config.CreateMap<ProjectTask, TaskDTO>();
-                config.CreateMap<TaskDTO, ProjectTask>();
+                config.CreateMap<ProjectTask, SubTaskDTO>();
+                config.CreateMap<SubTaskDTO, ProjectTask>()
+                    .ForMember(x => x.Id, action => action.Ignore());
+                config.CreateMap<TaskDTO, ProjectTask>()
+                    .ForMember(x => x.Id, action => action.Ignore());
             });
 
             return services.AddSingleton<IConfigurationProvider>(autoMapperConfig)
