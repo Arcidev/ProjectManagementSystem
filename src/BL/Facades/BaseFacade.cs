@@ -4,6 +4,9 @@ using System;
 
 namespace BL.Facades
 {
+    /// <summary>
+    /// Base facade
+    /// </summary>
     public abstract class BaseFacade
     {
         protected readonly IMapper mapper;
@@ -15,6 +18,12 @@ namespace BL.Facades
             this.uowProviderFunc = uowProviderFunc;
         }
 
+        /// <summary>
+        /// Checks nullability of object
+        /// </summary>
+        /// <param name="obj">Object to be tested</param>
+        /// <param name="errorMessage">Error message</param>
+        /// <exception cref="UIException">Thrown when obj is null</exception>
         protected void IsNotNull(object obj, string errorMessage)
         {
             if (obj == null)
