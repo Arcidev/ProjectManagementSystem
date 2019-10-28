@@ -33,6 +33,7 @@ namespace BL.Installers
 
             return services.AddSingleton<Func<ProjectRepository>>(provider => () => provider.GetRequiredService<ProjectRepository>())
                 .AddSingleton<Func<TaskRepository>>(provider => () => provider.GetRequiredService<TaskRepository>())
+                .AddSingleton<Func<ProjectsQuery>>(provider => () => provider.GetRequiredService<ProjectsQuery>())
                 .AddSingleton<Func<TasksQuery>>(provider => () => provider.GetRequiredService<TasksQuery>())
 
                 .AddSingleton<IUnitOfWorkProvider, AppUnitOfWorkProvider>()

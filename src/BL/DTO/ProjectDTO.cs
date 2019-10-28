@@ -14,10 +14,10 @@ namespace BL.DTO
             get
             {
                 // All tasks completed => Project completed
-                if (Tasks != null && !Tasks.Any() && SubProjects != null && SubProjects.Any() && Tasks.All(x => x.State == TaskState.Completed) && SubProjects.All(x => x.State == ProjectState.Completed))
+                if (Tasks != null && Tasks.Any() && SubProjects != null && SubProjects.Any() && Tasks.All(x => x.State == TaskState.Completed) && SubProjects.All(x => x.State == ProjectState.Completed))
                     return ProjectState.Completed;
 
-                if (Tasks != null && !Tasks.Any() && Tasks.Any(x => x.State != TaskState.Planned) || SubProjects != null && SubProjects.Any() && SubProjects.Any(x => x.State != ProjectState.Planned))
+                if (Tasks != null && Tasks.Any() && Tasks.Any(x => x.State != TaskState.Planned) || SubProjects != null && SubProjects.Any() && SubProjects.Any(x => x.State != ProjectState.Planned))
                     return ProjectState.InProgress;
 
                 return ProjectState.Planned;

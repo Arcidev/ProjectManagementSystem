@@ -1,5 +1,6 @@
 ﻿using Shared.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BL.DTO
 {
@@ -14,10 +15,13 @@ namespace BL.DTO
 
         public int ProjectId { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
+        [Required]
         public DateTime StartDate { get; set; }
 
         public DateTime? FinishDate { get; set; }

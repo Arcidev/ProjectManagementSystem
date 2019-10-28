@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using BL.DTO;
+using BL.Queries;
 using BL.Repositories;
 using BL.Resources;
 using DAL.Entities;
 using Riganti.Utils.Infrastructure.Core;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +19,15 @@ namespace BL.Facades
     public class ProjectFacade : BaseFacade
     {
         private readonly Func<ProjectRepository> projectRepository;
+        private readonly Func<ProjectsQuery> projectsQuery;
 
         public ProjectFacade(Func<ProjectRepository> projectRepository,
+            Func<ProjectsQuery> projectsQuery,
             IMapper mapper,
             Func<IUnitOfWorkProvider> uowProvider) : base(mapper, uowProvider)
         {
             this.projectRepository = projectRepository;
+            this.projectsQuery = projectsQuery;
         }
 
         /// <summary>
@@ -92,6 +97,20 @@ namespace BL.Facades
         }
 
         /// <summary>
+        /// Get projects by state
+        /// </summary>
+        /// <param name="state">Project state</param>
+        /// <returns>Projects by state</returns>
+        public async Task<IEnumerable<ProjectDTO>> GetProjects(ProjectState state)
+        {
+            using var uow = uowProviderFunc().Create();
+            var query = projectsQuery();
+            query.ProjectState = state;
+
+            return await query.ExecuteAsync();
+        }
+
+        /// <summary>
         /// Deletes existing project
         /// </summary>
         /// <param name="id">Id of project to be deleted</param>
@@ -100,8 +119,8 @@ namespace BL.Facades
         {
             using var uow = uowProviderFunc().Create();
             var repo = projectRepository();
+            await repo.DeleteProject(id);
 
-            repo.Delete(id);
             await uow.CommitAsync();
         }
     }

@@ -1,0 +1,308 @@
+{
+	"info": {
+		"_postman_id": "7accd60d-b589-4c61-9686-ae95cc69f85f",
+		"name": "Project Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Project",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7e5b53e4-7994-4a86-914f-26bbee70f2a4",
+						"exec": [
+							"const dateNow = new Date();\r",
+							"pm.environment.set(\"currentDate\", dateNow.toISOString());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "47cc8449-e048-45c6-847d-2d96955f020c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Id is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).not.eql(null);",
+							"    pm.environment.set(\"id\", jsonData.id);",
+							"});",
+							"",
+							"pm.test(\"Code is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.code).not.eql(null);",
+							"    pm.environment.set(\"code\", jsonData.code);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Code\": \"{{$guid}}\",\n\t\"Name\": \"{{ProjectName}}\",\n\t\"StartDate\": \"{{currentDate}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Host}}/project",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Project by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8605a22c-74ed-48dd-b286-fed790725d04",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Code is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.code).not.eql(null);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Host}}/project/{{id}}",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Project by Code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6cb49b3e-b8ac-4ada-a7c4-cbde3e1fde9c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Id is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).not.eql(null);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Host}}/project/{{code}}",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project",
+						"{{code}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7e5b53e4-7994-4a86-914f-26bbee70f2a4",
+						"exec": [
+							"const dateNow = new Date();\r",
+							"pm.environment.set(\"currentDate\", dateNow.toISOString());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "47cc8449-e048-45c6-847d-2d96955f020c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Id\": {{id}},\n\t\"Code\": \"{{code}}\",\n\t\"Name\": \"{{ProjectName}}\",\n\t\"StartDate\": \"{{currentDate}}\",\n\t\"SubProjects\": [{\n\t\t\"Code\": \"{{$guid}}\",\n\t\t\"Name\": \"{{ProjectName}}\",\n\t\t\"StartDate\": \"{{currentDate}}\"\n\t}]\n}"
+				},
+				"url": {
+					"raw": "{{Host}}/project",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Updated Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b9796f79-ba05-4b4e-b443-ee9bc4036aa1",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"SubProjects is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.subProjects).not.eql(null);",
+							"   pm.environment.set(\"subProjectId\", jsonData.subProjects[0].id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Host}}/project/{{id}}",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Task to SubProject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cf7f7832-20f9-479a-bca2-87fe8d8cc216",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Description\": \"Some description\",\n\t\"Name\": \"{{ProjectName}}\",\n\t\"StartDate\": \"{{currentDate}}\",\n\t\"ProjectId\": {{subProjectId}},\n\t\"SubTasks\": [{\n\t\t\"Description\": \"Some description\",\n\t\t\"Name\": \"{{ProjectName}}\",\n\t\t\"StartDate\": \"{{currentDate}}\",\n\t\t\"ProjectId\": {{subProjectId}}\n\t}, {\n\t\t\"Description\": \"Some description\",\n\t\t\"Name\": \"{{ProjectName}}\",\n\t\t\"StartDate\": \"{{currentDate}}\"\n\t}]\n}\n"
+				},
+				"url": {
+					"raw": "{{Host}}/task",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{Host}}/project/{{id}}",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"project",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

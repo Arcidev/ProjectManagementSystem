@@ -1,6 +1,7 @@
 ﻿using Shared.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace BL.DTO
@@ -14,10 +15,13 @@ namespace BL.DTO
 
         public int? ParentProjectId { get; set; }
 
+        [Required]
         public string Code { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public DateTime StartDate { get; set; }
 
         public DateTime? FinishDate { get; set; }
@@ -27,10 +31,10 @@ namespace BL.DTO
             get
             {
                 // All tasks completed => Project completed
-                if (Tasks != null && !Tasks.Any() && Tasks.All(x => x.State == TaskState.Completed))
+                if (Tasks != null && Tasks.Any() && Tasks.All(x => x.State == TaskState.Completed))
                     return ProjectState.Completed;
 
-                if (Tasks != null && !Tasks.Any() && Tasks.Any(x => x.State != TaskState.Planned))
+                if (Tasks != null && Tasks.Any() && Tasks.Any(x => x.State != TaskState.Planned))
                     return ProjectState.InProgress;
 
                 return ProjectState.Planned;

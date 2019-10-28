@@ -70,6 +70,30 @@ namespace BL.Tests
             await Assert.ThrowsAsync<UIException>(() => ProjectFacade.UpdateProject(new ProjectDTO() { Id = -1 }));
         }
 
+        [Fact]
+        public void TestProjectState()
+        {
+            var project = new ProjectDTO();
+            Assert.Equal(ProjectState.Planned, project.State);
+
+            project.SubProjects = new List<SubProjectDTO>() { new SubProjectDTO() { Tasks = new List<TaskDTO>() { new TaskDTO() } } };
+            project.Tasks = new List<TaskDTO>() { new TaskDTO() };
+            Assert.Equal(ProjectState.Planned, project.State);
+
+            project.Tasks[0].State = TaskState.InProgress;
+            Assert.Equal(ProjectState.InProgress, project.State);
+
+            project.Tasks[0].State = TaskState.Planned;
+            project.SubProjects[0].Tasks[0].State = TaskState.InProgress;
+            Assert.Equal(ProjectState.InProgress, project.State);
+
+            project.Tasks[0].State = TaskState.Completed;
+            Assert.Equal(ProjectState.InProgress, project.State);
+
+            project.SubProjects[0].Tasks[0].State = TaskState.Completed;
+            Assert.Equal(ProjectState.Completed, project.State);
+        }
+
         private void CompareProject(ProjectDTO expected, ProjectDTO actual)
         {
             Assert.NotSame(expected, actual);

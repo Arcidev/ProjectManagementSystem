@@ -29,6 +29,25 @@ namespace BL.Repositories
         {
             return await GetProjectIncludes().FirstOrDefaultAsync(x => x.Code == code);
         }
+    
+        /// <summary>
+        /// Deletes project with its internal referencies
+        /// </summary>
+        /// <param name="id">Id of the project</param>
+        internal async Task DeleteProject(int id)
+        {
+            var project = await GetProject(id);
+            if (project == null)
+                return;
+
+            Context.Tasks.RemoveRange(project.SubProjects.SelectMany(x => x.Tasks.SelectMany(y => y.SubTasks)));
+            Context.Tasks.RemoveRange(project.SubProjects.SelectMany(x => x.Tasks));
+            Context.Tasks.RemoveRange(project.Tasks.SelectMany(x => x.SubTasks));
+            Context.Tasks.RemoveRange(project.Tasks);
+
+            Context.Projects.RemoveRange(project.SubProjects);
+            Context.Projects.Remove(project);
+        }
 
         /// <summary>
         /// Take subprojects/tasks/subtasks

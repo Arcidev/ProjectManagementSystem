@@ -5,6 +5,7 @@ using BL.Repositories;
 using BL.Resources;
 using DAL.Entities;
 using Riganti.Utils.Infrastructure.Core;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +19,17 @@ namespace BL.Facades
     public class TaskFacade : BaseFacade
     {
         private readonly Func<TaskRepository> taskRepository;
+        private readonly Func<ProjectRepository> projectRepository;
         private readonly Func<TasksQuery> tasksQuery;
 
         public TaskFacade(Func<TaskRepository> taskRepository,
+            Func<ProjectRepository> projectRepository,
             Func<TasksQuery> tasksQuery,
             IMapper mapper,
             Func<IUnitOfWorkProvider> uowProvider) : base(mapper, uowProvider)
         {
             this.taskRepository = taskRepository;
+            this.projectRepository = projectRepository;
             this.tasksQuery = tasksQuery;
         }
 
@@ -36,7 +40,7 @@ namespace BL.Facades
         /// <returns>Asynchronous task</returns>
         public async Task AddTask(TaskDTO task)
         {
-            NormalizeTaskProjectId(task);
+            CheckandNormalizeProjectId(task);
             using var uow = uowProviderFunc().Create();
             var entity = mapper.Map<ProjectTask>(task);
 
@@ -55,7 +59,7 @@ namespace BL.Facades
         /// <exception cref="UIException">Thrown when project to be updated not found or subtask contains another subtask</exception>
         public async Task UpdateTask(TaskDTO task)
         {
-            NormalizeTaskProjectId(task);
+            CheckandNormalizeProjectId(task);
             using var uow = uowProviderFunc().Create();
             var repo = taskRepository();
 
@@ -98,6 +102,20 @@ namespace BL.Facades
         }
 
         /// <summary>
+        /// Get projects by state
+        /// </summary>
+        /// <param name="state">Project state</param>
+        /// <returns>Projects by state</returns>
+        public async Task<IEnumerable<TaskDTO>> GetTasks(TaskState state)
+        {
+            using var uow = uowProviderFunc().Create();
+            var query = tasksQuery();
+            query.TaskState = state;
+
+            return await query.ExecuteAsync();
+        }
+
+        /// <summary>
         /// Deletes existing tasks
         /// </summary>
         /// <param name="id">Id of task to be deleted</param>
@@ -106,8 +124,8 @@ namespace BL.Facades
         {
             using var uow = uowProviderFunc().Create();
             var repo = taskRepository();
+            await repo.DeleteProject(id);
 
-            repo.Delete(id);
             await uow.CommitAsync();
         }
 
@@ -123,6 +141,15 @@ namespace BL.Facades
 
             foreach (var task in tasks.Where(x => x.SubTasks != null))
                 NormalizeTaskProjectId(task);
+        }
+
+        private void CheckandNormalizeProjectId(TaskDTO task)
+        {
+            using var uow = uowProviderFunc().Create();
+            var repo = projectRepository();
+            IsNotNull(repo.GetById(task.ProjectId), ErrorMessages.ProjectNotFound);
+
+            NormalizeTaskProjectId(task);
         }
 
         private static void NormalizeTaskProjectId(TaskDTO task)

@@ -42,7 +42,7 @@ namespace ProjectManagementSystem.Controllers
             await taskFacade.UpdateTask(task);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
             await taskFacade.DeleteTask(id);
