@@ -1,4 +1,4 @@
-INPUT = src/RestAPI src/DAL src/BL
+INPUT = src/ProjectManagementSystem src/DAL src/BL src/Shared
 
 EXTRACT_STATIC = YES
 GENERATE_TREEVIEW = YES
