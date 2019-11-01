@@ -56,15 +56,15 @@ namespace BL.Facades
         /// <exception cref="UIException">Thrown when project to be updated not found or subproject tries to contain another subproject</exception>
         public async Task UpdateProject(ProjectDTO project)
         {
+            if (project.ParentProjectId.HasValue && project.SubProjects != null && project.SubProjects.Any())
+                throw new UIException(ErrorMessages.SubProjectContaingProjects);
+
             TaskFacade.NormalizeTaskProjectId(project.Tasks);
             using var uow = uowProviderFunc().Create();
             var repo = projectRepository();
 
             var entity = await repo.GetByIdAsync(project.Id);
             IsNotNull(entity, ErrorMessages.ProjectNotFound);
-
-            if (entity.ParentProjectId.HasValue && project.SubProjects != null && project.SubProjects.Any())
-                throw new UIException(ErrorMessages.SubProjectContaingProjects);
 
             mapper.Map(project, entity);
             await uow.CommitAsync();

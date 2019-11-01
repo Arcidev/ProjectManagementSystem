@@ -59,15 +59,15 @@ namespace BL.Facades
         /// <exception cref="UIException">Thrown when project to be updated not found or subtask contains another subtask</exception>
         public async Task UpdateTask(TaskDTO task)
         {
+            if (task.ParentTaskId.HasValue && task.SubTasks != null && task.SubTasks.Any())
+                throw new UIException(ErrorMessages.SubProjectContaingProjects);
+
             CheckandNormalizeProjectId(task);
             using var uow = uowProviderFunc().Create();
             var repo = taskRepository();
 
             var entity = await repo.GetByIdAsync(task.Id);
             IsNotNull(entity, ErrorMessages.TaskNotFound);
-
-            if (entity.ParentTaskId.HasValue && task.SubTasks != null && task.SubTasks.Any())
-                throw new UIException(ErrorMessages.SubProjectContaingProjects);
 
             mapper.Map(task, entity);
 
