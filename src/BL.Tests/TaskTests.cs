@@ -5,6 +5,7 @@ using Riganti.Utils.Infrastructure.Core;
 using Shared.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -72,6 +73,39 @@ namespace BL.Tests
         public async Task TestUpdateNotExistingProjectGet()
         {
             await Assert.ThrowsAsync<UIException>(() => TaskFacade.UpdateTask(new TaskDTO() { Id = -1 }));
+        }
+
+        [Fact]
+        public async Task TestSubTasksNotAllowed()
+        {
+            var taskFacade = TaskFacade;
+            var task = new TaskDTO()
+            {
+                SubTasks = new List<SubTaskDTO>() { new SubTaskDTO() }
+            };
+            await Assert.ThrowsAsync<UIException>(() => taskFacade.AddTask(task));
+
+            var project = new ProjectDTO()
+            {
+                Code = "SomeCode",
+                Name = "Name",
+                StartDate = DateTime.Now
+            };
+
+            await ProjectFacade.AddProject(project);
+            task.ProjectId = project.Id;
+            await taskFacade.AddTask(task);
+
+            task = await taskFacade.GetTask(task.Id);
+            var subTask = await taskFacade.GetTask(task.SubTasks.First().Id);
+            Assert.NotNull(subTask);
+
+            subTask.SubTasks = new List<SubTaskDTO>() { new SubTaskDTO() };
+            await Assert.ThrowsAsync<UIException>(() => taskFacade.UpdateTask(subTask));
+
+            task.SubTasks = null;
+            task.ParentTaskId = subTask.Id;
+            await Assert.ThrowsAsync<UIException>(() => taskFacade.UpdateTask(task));
         }
 
         private void CompareTask(TaskDTO expected, TaskDTO actual)

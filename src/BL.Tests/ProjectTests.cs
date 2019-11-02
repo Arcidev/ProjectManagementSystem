@@ -71,6 +71,34 @@ namespace BL.Tests
         }
 
         [Fact]
+        public async Task TestSubProjectNotAllowed()
+        {
+            var projectFacade = ProjectFacade;
+            var proj = new ProjectDTO()
+            {
+                Code = "abc",
+                SubProjects = new List<SubProjectDTO>()
+                {
+                    new SubProjectDTO()
+                    {
+                        Code = "bcd"
+                    }
+                }
+            };
+            await projectFacade.AddProject(proj);
+
+            var subproj = await projectFacade.GetProject("bcd");
+            Assert.NotNull(subproj);
+
+            subproj.SubProjects = new List<SubProjectDTO>() { new SubProjectDTO() };
+            await Assert.ThrowsAsync<UIException>(() => projectFacade.UpdateProject(subproj));
+
+            proj.SubProjects = null;
+            proj.ParentProjectId = subproj.Id;
+            await Assert.ThrowsAsync<UIException>(() => projectFacade.UpdateProject(proj));
+        }
+
+        [Fact]
         public void TestProjectState()
         {
             var project = new ProjectDTO();

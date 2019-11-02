@@ -25,10 +25,10 @@ namespace BL.Installers
                 config.CreateMap<Project, ProjectDTO>();
                 config.CreateMap<Project, SubProjectDTO>();
                 config.CreateMap<SubProjectDTO, Project>()
-                    .ForMember(x => x.Tasks, action => action.Condition(x => x.Tasks != null))
+                    .ForMember(x => x.Tasks, action => action.PreCondition(x => x.Tasks != null))
                     .ForMember(x => x.Id, action => action.Ignore());
                 config.CreateMap<ProjectDTO, Project>()
-                    .ForMember(x => x.SubProjects, action => action.Condition(x => x.SubProjects != null))
+                    .ForMember(x => x.SubProjects, action => action.PreCondition(x => x.SubProjects != null))
                     .ForMember(x => x.Id, action => action.Ignore());
 
                 config.CreateMap<ProjectTask, TaskDTO>();
@@ -36,7 +36,7 @@ namespace BL.Installers
                 config.CreateMap<SubTaskDTO, ProjectTask>()
                     .ForMember(x => x.Id, action => action.Ignore());
                 config.CreateMap<TaskDTO, ProjectTask>()
-                    .ForMember(x => x.SubTasks, action => action.Condition(x => x.SubTasks != null))
+                    .ForMember(x => x.SubTasks, action => action.PreCondition(x => x.SubTasks != null))
                     .ForMember(x => x.Id, action => action.Ignore());
             });
 

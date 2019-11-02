@@ -66,10 +66,12 @@ namespace BL.Facades
             using var uow = uowProviderFunc().Create();
             var repo = taskRepository();
 
-            var entity = await repo.GetByIdAsync(task.Id);
+            var entity = await repo.GetTask(task.Id);
             IsNotNull(entity, ErrorMessages.TaskNotFound);
-
             mapper.Map(task, entity);
+
+            if (entity.ParentTaskId.HasValue && entity.SubTasks.Any())
+                throw new UIException(ErrorMessages.SubProjectContaingProjects);
 
             await uow.CommitAsync();
         }
